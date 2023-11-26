@@ -1,4 +1,6 @@
-import { getUsers } from "../api";
+import { options } from "./api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth/next";
+import { getUsers } from "./api/notion";
 
 type User = {
   id: string;
@@ -7,6 +9,9 @@ type User = {
 };
 
 const Home = async () => {
+  const session = await getServerSession(options);
+
+  console.log("session", session);
   const users = await getUsers();
 
   if (!users) {
