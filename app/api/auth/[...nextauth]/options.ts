@@ -1,5 +1,13 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { getUsers } from "../../notion";
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+};
 
 const CREDENTIALS = CredentialsProvider({
   name: "Credentials",
@@ -8,20 +16,20 @@ const CREDENTIALS = CredentialsProvider({
     password: { label: "Password", type: "password" },
   },
   async authorize(credentials) {
-    const user = {
-      id: "1", // id must be a string
-      name: "John Doe",
-      email: "john.doe@email.com",
-      password: "password",
-    };
+    const users = await getUsers();
 
-    if (
-      credentials?.email === user.email &&
-      credentials?.password === user.password
-    ) {
-      return Promise.resolve(user);
-    } else {
-      return Promise.resolve(null);
+    if (users.length > 0) {
+      const user = users.find(
+        (user: User) =>
+          credentials?.email === user.email &&
+          credentials?.password === user.password
+      );
+
+      if (user) {
+        return Promise.resolve(user);
+      } else {
+        return Promise.resolve(null);
+      }
     }
   },
 });

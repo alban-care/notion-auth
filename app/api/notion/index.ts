@@ -10,11 +10,18 @@ type Properties = {
         number: number;
       };
     };
+    username: {
+      title: [
+        {
+          plain_text: string;
+        }
+      ];
+    };
     email: {
       email: string;
     };
-    username: {
-      title: [
+    password: {
+      rich_text: [
         {
           plain_text: string;
         }
@@ -39,12 +46,13 @@ export const getUsers = async () => {
   const { results } = await res.json();
 
   const users = results.map(({ properties }: Properties) => {
-    const { id, email, username } = properties;
+    const { id, email, username, password } = properties;
 
     return {
       id: id.unique_id.number,
       email: email.email,
-      username: username.title[0].plain_text,
+      name: username.title[0].plain_text,
+      password: password.rich_text[0].plain_text,
     };
   });
 

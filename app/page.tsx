@@ -1,20 +1,16 @@
 import { options } from "./api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth/next";
-import { getUsers } from "./api/notion";
 
 type User = {
   id: string;
   email: string;
-  username: string;
+  name: string;
 };
 
 const Home = async () => {
   const session = await getServerSession(options);
 
-  console.log("session", session);
-  const users = await getUsers();
-
-  if (!users) {
+  if (!session) {
     return (
       <main>
         <h1>Notion authentication</h1>
@@ -26,15 +22,12 @@ const Home = async () => {
   return (
     <main>
       <h1>Notion authentication</h1>
-      <p>Users : </p>
-      <ul>
-        {users.map(({ id, email, username }: User) => (
-          <li key={id}>
-            <p>{email}</p>
-            <p>{username}</p>
-          </li>
-        ))}
-      </ul>
+      <p>
+        Name : <span>{session.user?.name}</span>
+      </p>
+      <p>
+        Email : <span>{session.user?.email}</span>
+      </p>
     </main>
   );
 };
