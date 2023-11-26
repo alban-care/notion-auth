@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getUsers } from "../../notion";
+const bcrypt = require("bcryptjs");
 
 type User = {
   id: string;
@@ -20,12 +21,12 @@ const CREDENTIALS = CredentialsProvider({
 
     if (users.length > 0) {
       const user = users.find(
-        (user: User) =>
-          credentials?.email === user.email &&
-          credentials?.password === user.password
+        (user: User) => credentials?.email === user.email
       );
 
-      if (user) {
+      const compare = bcrypt.compareSync(credentials?.password, user?.password);
+
+      if (user && compare) {
         return Promise.resolve(user);
       } else {
         return Promise.resolve(null);
